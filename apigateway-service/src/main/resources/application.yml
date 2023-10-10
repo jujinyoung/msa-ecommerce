@@ -12,6 +12,8 @@ spring:
   application:
     name: apigateway-service
   cloud:
+    config:
+      name: ecommerce
     gateway:
       routes:
 #        - id: user-service
@@ -43,6 +45,14 @@ spring:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
             - AuthorizationHeaderFilter
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/actuator/**
+            - Method=GET, POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:
@@ -51,7 +61,14 @@ spring:
           uri: lb://ORDER-SERVICE
           predicates:
             - Path=/order-service/**
+  config:
+    import: optional:configserver:http://localhost:8888 # 구성정보 설정
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, httptrace
 
 token:
   secret: user_token
