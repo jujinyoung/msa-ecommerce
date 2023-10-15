@@ -4,10 +4,16 @@ server:
 spring:
   application:
     name: config-service
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
   profiles:
     active: native
   cloud:
     config:
+      import: optional:configserver:http://localhost:8888:name:config-server # 구성정보 설정
       server:
         native:
           search-locations: file:///D:/Spring_lecture/ecommerce-msa
@@ -18,4 +24,11 @@ spring:
 #          uri: https://github.com/레포url
 #          username: [username]
 #          password: [password]
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, busrefresh
 
